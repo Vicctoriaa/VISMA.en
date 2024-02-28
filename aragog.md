@@ -23,7 +23,7 @@ If we only want to search for the machine, and we are using VmWare, we can add t
 ```
 arp-scan -I ens33 –localnet | grep "VMware, Inc."
 ```
-![segunda cap_arp scan](https://github.com/Vicctoriaa/VISMA/assets/153718557/0adfdaf6-8c45-4ebb-8f52-129be138e098)
+![2 cap_arp scan](https://github.com/Vicctoriaa/VISMA.en/assets/153718557/b4c57bed-a656-4d79-8805-402de48c7649)
 
 # 2. ATTACK
 
