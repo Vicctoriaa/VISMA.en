@@ -355,7 +355,7 @@ We already have access, we can connect as root@IP_OF_THE_ARAGOG
 [^2]: language that manages the design and presentation of web pages, that is, how they look when a user visits them.
 [^3]: It inspects the internal data of the websites, identifying the programming that has been used to develop it. It is also an extension that we have to add by searching for it directly from the Internet.
 [^4]: tool specialized in scanning WordPress pages for vulnerabilities.
-[^5] – Particular command line user interface used to communicate with the Linux kernel.
+[^5]: Particular command line user interface used to communicate with the Linux kernel.
 [^6]: which allows us to cd to a directory but if we want to return to the one we were in we just have to put “popd”.
 [^7]: the ps aux command allows us to see running processes.
 [^8]: These are access permissions that can be assigned to files or directories in a Unix-based operating system.
