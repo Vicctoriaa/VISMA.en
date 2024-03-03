@@ -13,14 +13,9 @@ Pivoting is a technique used in cybersecurity where we use one machine as an int
 
 Once we have explained how pivoting works, we are going to explain how we have been able to compromise a laboratory with 6 machines (1 Windows and 5 Linux) where there are 4 internal networks configured. Although before that we must prepare the environment.
 
-### 1. [Aragog](https://github.com/Vicctoriaa/VISMA/blob/main/aragog.md)
+### 1. [Aragog]([https://github.com/Vicctoriaa/VISMA/blob/main/aragog.md](https://github.com/Vicctoriaa/VISMA.en/blob/main/aragog.md))
 This is the first machine with 2 flags. This has a network interface that will work on the same network segment as the attacking machine. It has another interface connected to VMNET 2 where the second machine in the pack is located in that same network segment: Nagini.
 
-### 2. Nagini
-This also has 2 network interfaces, One working on the network segment 10.10.0.0/24 (VMNET 2) and the other on 192.168.1.0/24 (VMNET 3). It consists of 3 flags (in total there are 8 flags (called “horocrux” due to the theme) distributed among the 3 machines. In VMNet 3 there is also Fawkes & Visma.
-
-### 3. Fawkes
-The third and last machine is located within the special Harry Potter pack. Once this machine is accessed, a Docker container with port forwarding will be shown (simply looking at the IP address), we must escape from the Docker container and jump to the real machine, from where we can jump to the Visma Machine (the order does not alter the result).
 
 
 
